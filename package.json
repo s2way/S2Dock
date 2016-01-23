@@ -1,10 +1,12 @@
 {
-  "name": "s2bike-dock",
+  "name": "s2dock",
   "version": "1.0.0",
   "description": "",
   "main": "dock.coffee",
   "scripts": {
-    "test": "grunt test",
+    "pretest": "coffeelint app",
+    "test": "echo 'Unit Tests'; mocha app/test --recursive -R progress --compilers coffee:coffee-script/register;",
+    "posttest": "rm -rf cov; mkdir -p cov; coffee --compile --output cov app; multi='mocha-cov-reporter=- html-cov=coverage.html' ./node_modules/mocha/bin/mocha cov/test -r blanket --reporter mocha-multi --compilers coffee:coffee-script/register --recursive;",
     "start": "coffee dock.coffee",
     "watch": "grunt"
   },
