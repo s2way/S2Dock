@@ -1,3 +1,3 @@
 module.exports =
     APP:
-        NAME: 's2bike'
+        NAME: 's2dock'

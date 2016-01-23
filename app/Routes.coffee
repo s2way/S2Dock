@@ -1,6 +1,7 @@
 class Routes
 
     getRoutes: () ->
+        bike = new (require './src/Bikes/Translator')
         routes =
             keepAlive: [
                 {
@@ -9,6 +10,13 @@ class Routes
                     method: (req, res, next) ->
                         res.json 200, 'OK'
                         next()
+                }
+            ]
+            bikes: [
+                {
+                    httpMethod: 'post'
+                    url: 'bikes/ride/'
+                    method: bike.take
                 }
             ]
 
