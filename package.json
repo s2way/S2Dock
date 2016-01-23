@@ -1,0 +1,48 @@
+{
+  "name": "s2bike-dock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dock.coffee",
+  "scripts": {
+    "test": "grunt test",
+    "start": "coffee dock.coffee",
+    "watch": "grunt"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "cov/src",
+      "loader": "./node-loaders/coffee-script.js"
+    },
+    "mocha-cov-reporter": {
+      "failOnError": true,
+      "threshold": 100,
+      "useColors": true
+    }
+  },
+  "author": "Versul",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "coffee-script": "latest",
+    "moment": "^2.11.1",
+    "restify": "~3.0.3",
+    "restwork": "git://github.com/s2way/restwork.git"
+  },
+  "devDependencies": {
+    "blanket": "git://github.com/alex-seville/blanket.git",
+    "coffeelint": "^1.9.4",
+    "expect.js": "^0.3.1",
+    "grunt": "~0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-coffeelint": "0.0.13",
+    "grunt-contrib-coffee": "^0.13.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-exec": "~0.4.6",
+    "grunt-mocha-test": "^0.12.7",
+    "load-grunt-tasks": "^3.1.0",
+    "mocha": "^2.2.4",
+    "mocha-cov-reporter": "^1.1.0",
+    "mocha-multi": "~0.7.1",
+    "query-string": "^3.0.0",
+    "travis-cov": "^0.2.5"
+  }
+}
