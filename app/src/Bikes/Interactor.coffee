@@ -1,10 +1,10 @@
 _ = require 'lodash'
 
-class Translator
+class Interactor
 
-    validate: (inputMessage) ->
+    validateBikeUnlock: (inputMessage) ->
         new Promise (resolve, reject) ->
-            reject status: 422, reason: validationError: 'no validation for you' unless inputMessage.data?
+            return reject status: 422, reason: validationError: 'no validation for you' unless inputMessage.data?
             resolve()
 
-module.exports = Translator
+module.exports = Interactor
