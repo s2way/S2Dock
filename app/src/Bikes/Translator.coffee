@@ -23,14 +23,13 @@ class Translator
             @_respond errorMessage.status, errorMessage.reason or errorMessage
 
         interactor.validateBikeUnlocking(inputMessage)
-            .then saveNewBikeStatus
-            .then respondSuccess
-            .catch respondFailure
+        .then saveNewBikeStatus
+        .then respondSuccess
+        .catch respondFailure
 
         next()
 
     _respond: (status, body) ->
-        console.log 'chamou'
         @_res.json status, body
 
 module.exports = Translator

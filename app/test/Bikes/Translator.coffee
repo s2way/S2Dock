@@ -107,7 +107,7 @@ describe 'The Bikes translator,', ->
 
             expectedOutput =
                 status: 200
-                reason: 'you can go'
+                reason: 'ok'
 
             deps =
                 interactor:
@@ -118,12 +118,6 @@ describe 'The Bikes translator,', ->
                             resolvedPromise
 
             instance = new Translator deps
-
-            instance.respondSuccess = ->
-                console.log 'success'
-
-            instance.respondFailure = ->
-                console.log 'failure'
 
             instance._respond = (status, body) ->
                 expect(status).to.be expectedOutput.status
