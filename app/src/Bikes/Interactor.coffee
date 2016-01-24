@@ -1,10 +1,20 @@
+'use strict'
+
 _ = require 'lodash'
 
 class Interactor
 
-    validateBikeUnlock: (inputMessage) ->
-        new Promise (resolve, reject) ->
-            return reject status: 422, reason: validationError: 'no validation for you' unless inputMessage.data?
-            resolve()
+    constructor: (deps) ->
+        C = deps?.constants or require '../../Constants'
+        @Entity = deps?.interactor?.Entity or require './Entity'
+
+    unlockBike: (inputMessage) ->
+
+        entity = new @Entity
+
+        entity.validateBikeUnlock(inputMessage)
+            .then (bikeStuff) ->
+                entity.saveNewBikeStatus(bikeStuff)
+                return
 
 module.exports = Interactor

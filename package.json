@@ -28,7 +28,8 @@
     "lodash": "^4.0.0",
     "moment": "^2.11.1",
     "restify": "~3.0.3",
-    "restwork": "git://github.com/s2way/restwork.git"
+    "restwork": "git://github.com/s2way/restwork.git",
+    "waferpie-utils": "git://github.com/s2way/waferpie-utils.git"
   },
   "devDependencies": {
     "blanket": "git://github.com/alex-seville/blanket.git",

@@ -5,8 +5,6 @@ expect = require 'expect.js'
 
 describe 'The Bikes translator,', ->
 
-    emptyCallback = ->
-
     describe 'in its take method,', ->
 
         instance = null
@@ -26,56 +24,6 @@ describe 'The Bikes translator,', ->
             new Promise (resolve, reject) ->
                 resolve()
 
-        it 'should return a validation error if something in the post is missing', (done) ->
-
-            req = {}
-
-            expectedOutput =
-                status: 429
-                reason: 'some validation error'
-
-            deps =
-                interactor:
-                    Interactor: ->
-                        validateBikeUnlocking: ->
-                            new Promise (resolve, reject) ->
-                                reject(expectedOutput)
-
-            instance = new Translator deps
-
-            instance._respond = (status, body) ->
-                expect(status).to.be expectedOutput.status
-                expect(body).to.be expectedOutput.reason
-                done()
-
-            instance.take req, emptyRes, ->
-
-        it 'should call saveNewBikeStatus if the validation passed', (done) ->
-
-            req = {}
-            methodCalled = false
-
-            expectedOutput =
-                status: 200
-                reason: 'ok'
-
-            deps =
-                interactor:
-                    Interactor: ->
-                        validateBikeUnlocking: ->
-                            resolvedPromise
-                        newBikeStatus: (stuff) ->
-                            methodCalled = true
-                            resolvedPromise
-
-            instance = new Translator deps
-
-            instance._respond = (status, body) ->
-                expect(methodCalled).to.be.ok()
-                done()
-
-            instance.take req, emptyRes, ->
-
         it 'should respond an error if something supernatural happens when saving the new bike status', (done) ->
 
             req = {}
@@ -87,10 +35,9 @@ describe 'The Bikes translator,', ->
             deps =
                 interactor:
                     Interactor: ->
-                        validateBikeUnlocking: ->
-                            resolvedPromise
-                        newBikeStatus: (stuff) ->
-                            throw expectedOutput
+                        unlockBike: (stuff) ->
+                            new Promise (resolve, reject) ->
+                                throw expectedOutput
 
             instance = new Translator deps
 
@@ -107,21 +54,17 @@ describe 'The Bikes translator,', ->
 
             expectedOutput =
                 status: 200
-                reason: 'ok'
 
             deps =
                 interactor:
                     Interactor: ->
-                        validateBikeUnlocking: ->
-                            resolvedPromise
-                        newBikeStatus: (stuff) ->
+                        unlockBike: (stuff) ->
                             resolvedPromise
 
             instance = new Translator deps
 
             instance._respond = (status, body) ->
                 expect(status).to.be expectedOutput.status
-                expect(body).to.be expectedOutput.reason
                 done()
 
             instance.take req, emptyRes, ->
