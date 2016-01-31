@@ -15,6 +15,5 @@ class Interactor
         entity.validateBikeUnlock(inputMessage)
             .then (bikeStuff) ->
                 entity.saveNewBikeStatus(bikeStuff)
-                return
 
 module.exports = Interactor

@@ -1,11 +1,12 @@
 'use strict'
-
+C = null
 _ = require 'lodash'
 
 class Entity
 
     constructor: (deps) ->
-        @Adapter = deps?.adapters?.Adapter || require './Adapter'
+        C = require '../../Constants'
+        @Adapter = deps?.adapters?.Adapter or require './Adapter'
 
     validateBikeUnlock: (inputMessage) ->
         adapter = new @Adapter
@@ -17,16 +18,19 @@ class Entity
                     resource: 'auth'
                     data: inputMessage.data
                 adapter.checkUserCredentials adapterMessage
+            .then (credentials) ->
+                adapter.checkPermissions credentials
+                # check if the user is allowed to take the bike (has money, is enabled and so on)
 
-    _unlockValidation: (inputMessage, interactorCallback) ->
-        @_validate inputMessage, @_unlockRules(), (validationError) ->
-            new Promise (resolve, reject) ->
-                return reject status: 422, reason: validationError?.error?.fields if validationError?
+    _unlockValidation: (inputMessage) ->
+        new Promise (resolve, reject) =>
+            @_validate inputMessage, @_unlockRules(), (validationError) ->
+                return reject error: C.ERROR.VALIDATION_ERROR, reason: validationError?.error?.fields if validationError?
                 resolve()
 
     saveNewBikeStatus: (bikeStuff) ->
-        new Promise (reject, resolve) ->
-            resolve()
+        new Promise (resolve, reject) ->
+            resolve(bikeStuff)
 
     _unlockRules: ->
         wpRules = require('waferpie-utils').Rules
@@ -41,7 +45,6 @@ class Entity
                     if _.isEmpty value
                         callback message: 'Field is invalid'
                     else
-                        # fire request to S2Auth to check credentials
                         callback()
                 station: (value, data, callback) ->
                     if _.isEmpty value
