@@ -6,7 +6,7 @@ class Interactor
 
     constructor: (deps) ->
         C = deps?.constants or require '../../Constants'
-        @Entity = deps?.interactor?.Entity or require './Entity'
+        @Entity = deps?.entity?.Entity or require './Entity'
 
     unlockBike: (inputMessage) ->
 

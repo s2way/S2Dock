@@ -16,21 +16,21 @@ class Translator
             interactor.unlockBike bikeAndStation
 
         respondSuccess = (msg) =>
-            @_respond 200, msg or 'ok'
+            @_respond 200, msg or 'ok', next
 
         respondFailure = (errorMessage) =>
             status = switch
                 when (errorMessage?.error) is C.ERROR.VALIDATION_ERROR then 422
                 when (errorMessage?.error) is C.ERROR.UNAUTHORIZED then 401
-            @_respond status, errorMessage?.reason or errorMessage
+                when (errorMessage?.error) is C.ERROR.SERVER_ERROR then 500
+            @_respond status, errorMessage?.reason or errorMessage, next
 
         interactor.unlockBike(inputMessage)
             .then respondSuccess
             .catch respondFailure
 
-        next()
-
-    _respond: (status, body) ->
+    _respond: (status, body, next) ->
         @_res.json status, body
+        next()
 
 module.exports = Translator

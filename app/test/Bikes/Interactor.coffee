@@ -2,57 +2,63 @@
 
 Interactor = require '../../src/Bikes/Interactor'
 expect = require 'expect.js'
+C = require '../../Constants'
 
-describe 'The interactor,', ->
+describe 'The Interactor,', ->
 
     describe 'in its unlockBike method,', ->
 
-        it 'should return a validation error if something in the post is missing'
+        it 'should return an error if the validation fails', ->
 
-            #     req = {}
+            expectedError = error: C.ERROR.VALIDATION_ERROR, reason: 'because yes'
 
-            #     expectedOutput =
-            #         status: 429
-            #         reason: 'some validation error'
+            deps =
+                entity:
+                    Entity: ->
+                        validateBikeUnlock: (inputMessage) ->
+                            new Promise (resolve, reject) ->
+                                reject expectedError
 
-            #     deps =
-            #         interactor:
-            #             Interactor: ->
-            #                 validateBikeUnlocking: ->
-            #                     new Promise (resolve, reject) ->
-            #                         reject(expectedOutput)
+            instance = new Interactor deps
 
-            #     instance = new Translator deps
+            instance.unlockBike().catch (error) ->
+                expect(error).to.eql expectedError
 
-            #     instance._respond = (status, body) ->
-            #         expect(status).to.be expectedOutput.status
-            #         expect(body).to.be expectedOutput.reason
-            #         done()
+        it 'should call hand the bike data to the next function and then return nothing if the saving went fine', ->
 
-            #     instance.take req, emptyRes, ->
+            expectedError = 'no you cant'
 
-        it 'should call saveNewBikeStatus if the validation passed'
+            deps =
+                entity:
+                    Entity: ->
+                        validateBikeUnlock: (inputMessage) ->
+                            new Promise (resolve, reject) ->
+                                resolve some: 'stuff'
+                        saveNewBikeStatus: (bikeStuff) ->
+                            new Promise (resolve, reject) ->
+                                reject expectedError
 
-            #     req = {}
-            #     methodCalled = false
+            instance = new Interactor deps
 
-            #     expectedOutput =
-            #         status: 200
-            #         reason: 'ok'
+            instance.unlockBike().catch (error) ->
+                expect(error).to.eql expectedError
 
-            #     deps =
-            #         interactor:
-            #             Interactor: ->
-            #                 validateBikeUnlocking: ->
-            #                     resolvedPromise
-            #                 newBikeStatus: (stuff) ->
-            #                     methodCalled = true
-            #                     resolvedPromise
+        it 'should call hand the bike data to the next function and then return nothing if the saving went fine', ->
 
-            #     instance = new Translator deps
+            bikeData = some: 'wheel'
 
-            #     instance._respond = (status, body) ->
-            #         expect(methodCalled).to.be.ok()
-            #         done()
+            deps =
+                entity:
+                    Entity: ->
+                        validateBikeUnlock: (inputMessage) ->
+                            new Promise (resolve, reject) ->
+                                resolve bikeData
+                        saveNewBikeStatus: (bikeStuff) ->
+                            expect(bikeStuff).to.eql bikeData
+                            null
 
-            #     instance.take req, emptyRes, ->
+            instance = new Interactor deps
+
+            instance.unlockBike().then (saveResponse) ->
+                expect(saveResponse).not.to.be.ok()
+

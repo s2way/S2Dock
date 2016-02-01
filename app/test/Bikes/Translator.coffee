@@ -2,6 +2,7 @@
 
 Translator = require '../../src/Bikes/Translator'
 expect = require 'expect.js'
+C = require '../../Constants'
 
 describe 'The Bikes translator,', ->
 
@@ -26,10 +27,12 @@ describe 'The Bikes translator,', ->
 
         it 'should respond an error if something supernatural happens when saving the new bike status', (done) ->
 
+            respondCalled = false
+
             req = {}
 
             expectedOutput =
-                status: 500
+                error: C.ERROR.SERVER_ERROR
                 reason: 'theres a ghost in the closet'
 
             deps =
@@ -41,14 +44,17 @@ describe 'The Bikes translator,', ->
 
             instance = new Translator deps
 
-            instance._respond = (status, body) ->
-                expect(status).to.be expectedOutput.status
+            instance._respond = (status, body, next) ->
+                expect(status).to.be 500
                 expect(body).to.be expectedOutput.reason
-                done()
+                respondCalled = true
+                next()
 
             instance.take req, emptyRes, ->
+                expect(respondCalled).to.be.ok()
+                done()
 
-        it 'should respond ok if the bike could be released', (done) ->
+        it 'should respond ok if the bike could be released', ->
 
             req = {}
 
@@ -65,6 +71,5 @@ describe 'The Bikes translator,', ->
 
             instance._respond = (status, body) ->
                 expect(status).to.be expectedOutput.status
-                done()
 
             instance.take req, emptyRes, ->

@@ -36,7 +36,7 @@ class Entity
         wpRules = require('waferpie-utils').Rules
         rules =
             validate:
-                user: (value, data, callback) =>
+                user: (value, data, callback) ->
                     if _.isEmpty value
                         callback message: 'Field is invalid'
                     else
