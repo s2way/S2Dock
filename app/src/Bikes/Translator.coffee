@@ -12,25 +12,35 @@ class Translator
         inputMessage =
             data: req.body
 
-        unlockBike = (bikeAndStation) ->
-            interactor.unlockBike bikeAndStation
+        interactor.unlockBike inputMessage, (error, success) =>
+            return @_respondFailure error if error?
+            @_respondSuccess null, success
 
-        respondSuccess = (msg) =>
-            @_respond 200, msg or 'ok', next
+        next()
 
-        respondFailure = (errorMessage) =>
-            status = switch
-                when (errorMessage?.error) is C.ERROR.VALIDATION_ERROR then 422
-                when (errorMessage?.error) is C.ERROR.UNAUTHORIZED then 401
-                when (errorMessage?.error) is C.ERROR.SERVER_ERROR then 500
-            @_respond status, errorMessage?.reason or errorMessage, next
+    return: (req, @_res, next) =>
+        interactor = new @Interactor
+        inputMessage =
+            data: req.body
 
-        interactor.unlockBike(inputMessage)
-            .then respondSuccess
-            .catch respondFailure
+        interactor.returnBike inputMessage, (error, success) =>
+            return @_respondFailure error if error?
+            @_respondSuccess null, success
+
+        next()
+
+    _respondSuccess: (msg) =>
+        @_respond 200, msg or 'ok'
+
+    _respondFailure: (errorMessage) =>
+        status = switch
+            when (errorMessage?.error) is C.ERROR.VALIDATION_ERROR then 422
+            when (errorMessage?.error) is C.ERROR.UNAUTHORIZED then 401
+            when (errorMessage?.error) is C.ERROR.SERVER_ERROR then 500
+
+        @_respond status, errorMessage?.reason or errorMessage
 
     _respond: (status, body, next) ->
         @_res.json status, body
-        next()
 
 module.exports = Translator

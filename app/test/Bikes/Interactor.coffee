@@ -4,61 +4,59 @@ Interactor = require '../../src/Bikes/Interactor'
 expect = require 'expect.js'
 C = require '../../Constants'
 
-describe 'The Interactor,', ->
+describe 'The Bikes Interactor,', ->
 
     describe 'in its unlockBike method,', ->
 
-        it 'should return an error if the validation fails', ->
+        it 'should return an error if the validation fails', (done) ->
 
             expectedError = error: C.ERROR.VALIDATION_ERROR, reason: 'because yes'
 
             deps =
                 entity:
                     Entity: ->
-                        validateBikeUnlock: (inputMessage) ->
-                            new Promise (resolve, reject) ->
-                                reject expectedError
+                        validateBikeUnlock: (inputMessage, callback) ->
+                            callback expectedError
 
             instance = new Interactor deps
 
-            instance.unlockBike().catch (error) ->
+            instance.unlockBike {}, (error, success) ->
                 expect(error).to.eql expectedError
+                done()
 
-        it 'should call hand the bike data to the next function and then return nothing if the saving went fine', ->
+        it 'should hand the bike data to save but return an error if it fails', ->
 
-            expectedError = 'no you cant'
+            expectedError = 'saving error'
 
             deps =
                 entity:
                     Entity: ->
-                        validateBikeUnlock: (inputMessage) ->
-                            new Promise (resolve, reject) ->
-                                resolve some: 'stuff'
-                        saveNewBikeStatus: (bikeStuff) ->
-                            new Promise (resolve, reject) ->
-                                reject expectedError
+                        validateBikeUnlock: (inputMessage, callback) ->
+                            callback()
+                        saveNewBikeStatus: (bikeStuff, callback) ->
+                            callback expectedError
 
             instance = new Interactor deps
 
-            instance.unlockBike().catch (error) ->
+            instance.unlockBike {}, (error, success) ->
                 expect(error).to.eql expectedError
 
-        it 'should call hand the bike data to the next function and then return nothing if the saving went fine', ->
+        it 'should go through the functions and return nothing if everything went as expected', ->
 
             bikeData = some: 'wheel'
 
             deps =
                 entity:
                     Entity: ->
-                        validateBikeUnlock: (inputMessage) ->
-                            new Promise (resolve, reject) ->
-                                resolve bikeData
-                        saveNewBikeStatus: (bikeStuff) ->
+                        validateBikeUnlock: (inputMessage, callback) ->
+                            callback null, bikeData
+                        saveNewBikeStatus: (bikeStuff, callback) ->
                             expect(bikeStuff).to.eql bikeData
-                            null
+                            callback()
 
             instance = new Interactor deps
 
-            instance.unlockBike().then (saveResponse) ->
-                expect(saveResponse).not.to.be.ok()
+            instance.unlockBike {}, (error, success) ->
+                expect(error).not.to.be.ok()
+                expect(success).not.to.be.ok()
 
